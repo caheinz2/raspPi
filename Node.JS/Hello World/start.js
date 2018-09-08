@@ -1,6 +1,8 @@
 // import express JS module into app
 // and creates its variable.
 var express = require('express');
+var mysql  = require('mysql');
+var fs = require('fs');
 var app = express();
 
 // Creates a server which runs on port 3000 and
@@ -8,6 +10,33 @@ var app = express();
 app.listen(3000, function() {
     console.log('server running on port 3000');
 } )
+
+// Function readDatabase is executed whenever
+// main url is loaded (localhost:3000/)
+app.get('/', readDatabase)
+
+function readDatabase(req, res) {
+
+    //create connection to database
+    var rawCreds = fs.readFileSync('./data/databaseCredentials.json');
+    var Creds = JSON.parse(rawCreds);
+
+    //DEBUGGING!
+    console.log(Creds.gentlemansCorner.user);
+    console.log(Creds.gentlemansCorner.pass);
+
+    var con = mysql.createConnection({
+        host: "localhost",
+        user: Creds.gentlemansCorner.user,
+        password: Creds.gentlemansCorner.pass
+    });
+
+    con.connect(function(err) {
+        if (err) throw err;
+        console.log("Connected!");
+    });
+}
+
 
 // Function callName() is executed whenever
 // url is of the form localhost:3000/name
